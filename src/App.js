@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const icons = {
   gel: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="13" y1="6" x2="13" y2="18"/></svg>,
@@ -91,10 +92,24 @@ export default function App() {
   </div>
   {page !== "home" && (
     <div className="tool-overlay">
-      <div className="tool-inner">
-      <button className="back-btn" onClick={() => setPage("home")}>
-        ← Back to Home
-      </button>
+      <div className="tool-inner" id="export-area">
+      <div style={{display:"flex", gap:"12px", marginBottom:"32px", flexWrap:"wrap"}}>
+  <button className="back-btn" onClick={() => setPage("home")}>
+    ← Back to Home
+  </button>
+  <button className="back-btn" onClick={async () => {
+    const element = document.getElementById('export-area');
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`gelcalc-${page}.pdf`);
+  }}>
+    ⬇ Export PDF
+  </button>
+</div>
       {page === "gel" && <GelPage inputs={inputs} updateInput={updateInput} />}
       {page === "etbr" && <EtBrPage inputs={inputs} updateInput={updateInput} />}
       {page === "template" && <TemplatePage inputs={inputs} updateInput={updateInput} />}
