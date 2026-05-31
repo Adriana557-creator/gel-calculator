@@ -87,7 +87,7 @@ export default function App() {
 
       <main>
   <div className="content">
-    <HomePage setPage={setPage} dark={dark} />
+    <HomePage setPage={navigate} dark={dark} />
   </div>
   {page !== "home" && (
     <div className="tool-overlay">
