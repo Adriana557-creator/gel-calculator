@@ -543,3 +543,48 @@ body { font-family: 'EB Garamond', serif; }
   .dark .mobile-menu button.active { background: #0a1f2a; color: #fff; }
   .light .mobile-menu button { color: #0369a1; }
   .light .mobile-menu button.active { background: #daeef7; color: #111; }
+  .tool-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 200;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+
+.tool-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 100px 40px 60px 40px;
+}
+
+.dark .tool-overlay {
+  background: rgba(8,8,8,0.97);
+  backdrop-filter: blur(12px);
+}
+
+.light .tool-overlay {
+  background: rgba(240,246,250,0.97);
+  backdrop-filter: blur(12px);
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 32px;
+  display: inline-block;
+  transition: all 0.15s;
+}
+
+.dark .back-btn { border-color: #0e2a38; color: #7dd3fc; }
+.dark .back-btn:hover { background: #0a1f2a; }
+.light .back-btn { border-color: #bcd9e8; color: #0369a1; }
+.light .back-btn:hover { background: #daeef7; }

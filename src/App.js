@@ -18,6 +18,7 @@ const icons = {
 export default function App() {
   const [page, setPage] = useState("home");
   const [dark, setDark] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [inputs, setInputs] = useState({
     gelVolume: "",
     gelPercent: "1.0",
@@ -36,30 +37,76 @@ export default function App() {
   function updateInput(key, value) {
     setInputs(prev => ({ ...prev, [key]: value }));
   }
+
+  function navigate(p) {
+    setPage(p);
+    setMenuOpen(false);
+    window.history.pushState({ page: p }, "");
+  }
+
+  useState(() => {
+    const handler = (e) => {
+      const p = e.state?.page || "home";
+      setPage(p);
+    };
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, []);
+
   return (
-   <div className={`app ${dark ? "dark" : "light"}`}>
+    <div className={`app ${dark ? "dark" : "light"}`}>
       <nav className="navbar">
         <div className="logo">GELCALC</div>
         <div className="nav-links">
           {[["home","Home"],["gel","Gel Mix"],["template","Template"],["etbr","EtBr"],["dilution","Dilution"],["dye","Loading Dye"],["buffer","Buffer"],["runtime","Run Time"],["protocols","Protocols"]].map(([key,label]) => (
-            <button key={key} onClick={() => setPage(key)} className={page === key ? "active" : ""}>{label}</button>
+            <button key={key} onClick={() => navigate(key)} className={page === key ? "active" : ""}>{label}</button>
           ))}
         </div>
-        <button className="mode-toggle" onClick={() => setDark(!dark)} style={{marginLeft: "auto"}}>
-          {dark ? icons.sun : icons.moon}
-        </button>
+        <div style={{display:"flex", alignItems:"center", gap:"8px", marginLeft:"auto"}}>
+          <button className="mode-toggle" onClick={() => setDark(!dark)}>
+            {dark ? icons.sun : icons.moon}
+          </button>
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {menuOpen
+                ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+                : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
+              }
+            </svg>
+          </button>
+        </div>
       </nav>
-      <main className="content">
-        {page === "gel" && <GelPage inputs={inputs} updateInput={updateInput} />}
-{page === "home" && <HomePage setPage={setPage} dark={dark} />}
-{page === "etbr" && <EtBrPage inputs={inputs} updateInput={updateInput} />}
-{page === "template" && <TemplatePage inputs={inputs} updateInput={updateInput} />}
-{page === "dilution" && <DilutionPage inputs={inputs} updateInput={updateInput} />}
-{page === "dye" && <DyePage inputs={inputs} updateInput={updateInput} />}
-{page === "buffer" && <BufferPage inputs={inputs} updateInput={updateInput} />}
-{page === "runtime" && <RuntimePage inputs={inputs} updateInput={updateInput} />}
-{page === "protocols" && <ProtocolsPage />}
-      </main>
+
+      {menuOpen && (
+        <div className="mobile-menu">
+          {[["home","Home"],["gel","Gel Mix"],["template","Template"],["etbr","EtBr"],["dilution","Dilution"],["dye","Loading Dye"],["buffer","Buffer"],["runtime","Run Time"],["protocols","Protocols"]].map(([key,label]) => (
+            <button key={key} onClick={() => navigate(key)} className={page === key ? "active" : ""}>{label}</button>
+          ))}
+        </div>
+      )}
+
+      <main>
+  <div className="content">
+    <HomePage setPage={setPage} dark={dark} />
+  </div>
+  {page !== "home" && (
+    <div className="tool-overlay">
+      <div className="tool-inner">
+      <button className="back-btn" onClick={() => setPage("home")}>
+        ← Back to Home
+      </button>
+      {page === "gel" && <GelPage inputs={inputs} updateInput={updateInput} />}
+      {page === "etbr" && <EtBrPage inputs={inputs} updateInput={updateInput} />}
+      {page === "template" && <TemplatePage inputs={inputs} updateInput={updateInput} />}
+      {page === "dilution" && <DilutionPage inputs={inputs} updateInput={updateInput} />}
+      {page === "dye" && <DyePage inputs={inputs} updateInput={updateInput} />}
+      {page === "buffer" && <BufferPage inputs={inputs} updateInput={updateInput} />}
+      {page === "runtime" && <RuntimePage inputs={inputs} updateInput={updateInput} />}
+      {page === "protocols" && <ProtocolsPage />}
+    </div>
+    </div>
+  )}
+</main>
     </div>
   );
 }
