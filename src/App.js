@@ -1,8 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-
 const icons = {
   gel: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="13" y1="6" x2="13" y2="18"/></svg>,
   etbr: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 3h6l1 6H8L9 3z"/><rect x="7" y="9" width="10" height="8" rx="1"/><path d="M10 17v3M14 17v3"/><line x1="7" y1="13" x2="17" y2="13"/></svg>,
