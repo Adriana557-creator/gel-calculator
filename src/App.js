@@ -302,7 +302,9 @@ function TemplatePage({ inputs, updateInput }) {
     const pad = 28, wallT = 8;
     const wellW = 10, wellH = 16;
     const wellsPerRow = t.wells;
-    const wellStartX = pad + (innerW - (wellsPerRow * wellW + (wellsPerRow - 1) * gap)) / 2;
+const innerW = W - pad * 2;
+const gap = wellsPerRow > 1 ? (innerW - wellsPerRow * wellW) / (wellsPerRow - 1) : 0;
+const wellStartX = pad + (innerW - (wellsPerRow * wellW + (wellsPerRow - 1) * gap)) / 2;
     const wellStartY = pad + 20;
 
     const renderWells = (rowIdx) =>
