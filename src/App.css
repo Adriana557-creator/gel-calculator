@@ -82,7 +82,7 @@ body { font-family: 'EB Garamond', serif; }
 .light .mode-toggle { border-color: #bcd9e8; color: #4a8fa8; }
 .light .mode-toggle:hover { color: #0369a1; border-color: #0369a1; }
 
-.content { max-width: 860px; margin: 0 auto; padding: 60px 40px; }
+.content { max-width: 860px; margin: 0 auto; padding: 32px 16px; }
 
 .home h1 {
   font-size: 4.5rem;
