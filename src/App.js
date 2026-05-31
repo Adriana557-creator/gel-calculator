@@ -39,7 +39,6 @@ export default function App() {
   }
 
   function navigate(p) {
-    const pageOrder = ["gel", "etbr", "template", "dilution", "dye", "buffer", "runtime", "protocols"];
     setPage(p);
     setMenuOpen(false);
     window.history.pushState({ page: p }, "");
