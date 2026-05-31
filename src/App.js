@@ -300,7 +300,7 @@ function TemplatePage({ inputs, updateInput }) {
     const scale = 3.2;
     const W = t.w * scale, H = t.h * scale;
     const pad = 28, wallT = 8;
-    const innerW = W - pad * 2, innerH = H - pad * 2;
+    const innerW = W - pad * 2;
     const wellW = 10, wellH = 16;
     const wellsPerRow = t.wells;
     const gap = wellsPerRow > 1 ? (innerW - wellsPerRow * wellW) / (wellsPerRow - 1) : 0;
