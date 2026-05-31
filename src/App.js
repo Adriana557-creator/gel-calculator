@@ -99,7 +99,12 @@ export default function App() {
   </button>
   <button className="back-btn" onClick={async () => {
     const element = document.getElementById('export-area');
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    const canvas = await html2canvas(element, { 
+  scale: 2, 
+  useCORS: true,
+  backgroundColor: '#ffffff',
+  logging: false
+});
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -110,14 +115,16 @@ export default function App() {
     ⬇ Export PDF
   </button>
 </div>
-      {page === "gel" && <GelPage inputs={inputs} updateInput={updateInput} />}
-      {page === "etbr" && <EtBrPage inputs={inputs} updateInput={updateInput} />}
-      {page === "template" && <TemplatePage inputs={inputs} updateInput={updateInput} />}
-      {page === "dilution" && <DilutionPage inputs={inputs} updateInput={updateInput} />}
-      {page === "dye" && <DyePage inputs={inputs} updateInput={updateInput} />}
-      {page === "buffer" && <BufferPage inputs={inputs} updateInput={updateInput} />}
-      {page === "runtime" && <RuntimePage inputs={inputs} updateInput={updateInput} />}
-      {page === "protocols" && <ProtocolsPage />}
+      <div id="export-area">
+        {page === "gel" && <GelPage inputs={inputs} updateInput={updateInput} />}
+        {page === "etbr" && <EtBrPage inputs={inputs} updateInput={updateInput} />}
+        {page === "template" && <TemplatePage inputs={inputs} updateInput={updateInput} />}
+        {page === "dilution" && <DilutionPage inputs={inputs} updateInput={updateInput} />}
+        {page === "dye" && <DyePage inputs={inputs} updateInput={updateInput} />}
+        {page === "buffer" && <BufferPage inputs={inputs} updateInput={updateInput} />}
+        {page === "runtime" && <RuntimePage inputs={inputs} updateInput={updateInput} />}
+        {page === "protocols" && <ProtocolsPage />}
+      </div>
 
       {page !== "protocols" && (
         <button className="next-btn" onClick={() => {
