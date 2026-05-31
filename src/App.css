@@ -618,3 +618,18 @@ body { font-family: 'EB Garamond', serif; }
 .dark .back-btn:hover { background: #0a1f2a; }
 .light .back-btn { border-color: #bcd9e8; color: #0369a1; }
 .light .back-btn:hover { background: #daeef7; }
+.export-btn {
+  background: transparent;
+  border: 1px solid #ef4444;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 0.15s;
+  color: #ef4444;
+}
+
+.export-btn:hover { background: #ef4444; color: #fff; }
