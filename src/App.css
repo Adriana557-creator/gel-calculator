@@ -591,6 +591,28 @@ body { font-family: 'EB Garamond', serif; }
   display: inline-block;
   transition: all 0.15s;
 }
+.next-btn {
+  display: none;
+  width: 100%;
+  padding: 16px;
+  margin-top: 32px;
+  border: 1px solid;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.dark .next-btn { background: #0e4a6a; color: #7dd3fc; border-color: #7dd3fc; }
+.light .next-btn { background: #0369a1; color: #fff; border-color: #0369a1; }
+.next-btn:hover { opacity: 0.8; }
+
+@media (max-width: 768px) {
+  .next-btn { display: block; }
+}
 
 .dark .back-btn { border-color: #0e2a38; color: #7dd3fc; }
 .dark .back-btn:hover { background: #0a1f2a; }

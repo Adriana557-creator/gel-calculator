@@ -39,6 +39,7 @@ export default function App() {
   }
 
   function navigate(p) {
+    const pageOrder = ["gel", "etbr", "template", "dilution", "dye", "buffer", "runtime", "protocols"];
     setPage(p);
     setMenuOpen(false);
     window.history.pushState({ page: p }, "");
@@ -103,7 +104,20 @@ export default function App() {
       {page === "buffer" && <BufferPage inputs={inputs} updateInput={updateInput} />}
       {page === "runtime" && <RuntimePage inputs={inputs} updateInput={updateInput} />}
       {page === "protocols" && <ProtocolsPage />}
-    </div>
+
+      {page !== "protocols" && (
+        <button className="next-btn" onClick={() => {
+          const idx = pageOrder.indexOf(page);
+          if (idx < pageOrder.length - 1) navigate(pageOrder[idx + 1]);
+        }}>
+          Next: {(() => {
+            const idx = pageOrder.indexOf(page);
+            const labels = { gel: "Gel Mix", etbr: "EtBr Amount", template: "Template", dilution: "Dilution", dye: "Loading Dye", buffer: "Buffer Prep", runtime: "Run Time", protocols: "Protocols" };
+            return labels[pageOrder[idx + 1]] || "";
+          })()} →
+        </button>
+      )}
+      </div>
     </div>
   )}
 </main>
