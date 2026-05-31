@@ -264,38 +264,112 @@ function TemplatePage({ inputs, updateInput }) {
   function calculate() {
     const n = parseInt(inputs.numSamples);
     if (!n || n <= 0) return;
-    const total = n + 1; // +1 for ladder
-    let tray, comb, wellVol, note;
+    const total = n + 1;
+    let tray, comb, wellVol, gelVol, note, trayKey;
 
     if (total <= 7) {
-      tray = "Mini (7 × 7 cm)"; comb = "6-well"; wellVol = "40–50 µL";
+      tray = "Mini"; comb = "6-well"; wellVol = "40–50 µL"; gelVol = "25–30 mL"; trayKey = "mini6";
     } else if (total <= 11) {
-      tray = "Mini (7 × 7 cm)"; comb = "10-well"; wellVol = "25–30 µL";
+      tray = "Mini"; comb = "10-well"; wellVol = "25–30 µL"; gelVol = "30–35 mL"; trayKey = "mini10";
     } else if (total <= 13) {
-      tray = "Medium (10 × 10 cm)"; comb = "12-well"; wellVol = "20–25 µL";
+      tray = "Medium"; comb = "12-well"; wellVol = "20–25 µL"; gelVol = "50–60 mL"; trayKey = "medium12";
     } else if (total <= 21) {
-      tray = "Medium (10 × 10 cm)"; comb = "20-well"; wellVol = "15–20 µL";
+      tray = "Medium"; comb = "20-well"; wellVol = "15–20 µL"; gelVol = "60–75 mL"; trayKey = "medium20";
     } else {
-      tray = "Large (15 × 15 cm)"; comb = "20-well × 2 rows"; wellVol = "15–20 µL";
+      tray = "Large"; comb = "20-well × 2 rows"; wellVol = "15–20 µL"; gelVol = "100–120 mL"; trayKey = "large";
     }
 
-    if (parseFloat(inputs.gelPercent) <= 0.8) {
-      note = "Low % gel — use large tray for better band separation";
-    } else if (parseFloat(inputs.gelPercent) >= 1.5) {
-      note = "High % gel — mini tray works well for small fragments";
-    } else {
-      note = "Standard gel — recommended tray selected";
-    }
+    note = parseFloat(inputs.gelPercent) <= 0.8
+      ? "Low % gel — use large tray for better separation"
+      : parseFloat(inputs.gelPercent) >= 1.5
+      ? "High % gel — mini tray works well for small fragments"
+      : "Standard gel — recommended tray selected";
 
-    setResult({ tray, comb, wellVol, total, note });
+    setResult({ tray, comb, wellVol, gelVol, total, note, trayKey });
   }
+
+  const TrayDiagram = ({ trayKey }) => {
+    const trays = {
+      mini6: { w: 70, h: 70, wells: 6, rows: 1, label: "Mini Tray — 7 × 7 cm", volLabel: "25–30 mL gel" },
+      mini10: { w: 70, h: 70, wells: 10, rows: 1, label: "Mini Tray — 7 × 7 cm", volLabel: "30–35 mL gel" },
+      medium12: { w: 100, h: 100, wells: 12, rows: 1, label: "Medium Tray — 10 × 10 cm", volLabel: "50–60 mL gel" },
+      medium20: { w: 100, h: 100, wells: 20, rows: 1, label: "Medium Tray — 10 × 10 cm", volLabel: "60–75 mL gel" },
+      large: { w: 150, h: 150, wells: 20, rows: 2, label: "Large Tray — 15 × 15 cm", volLabel: "100–120 mL gel" },
+    };
+    const t = trays[trayKey];
+    const scale = 3.2;
+    const W = t.w * scale, H = t.h * scale;
+    const pad = 28, wallT = 8;
+    const innerW = W - pad * 2, innerH = H - pad * 2;
+    const wellW = 10, wellH = 16;
+    const wellsPerRow = t.wells;
+    const totalWellW = wellsPerRow * wellW + (wellsPerRow - 1) * ((innerW - wellsPerRow * wellW) / (wellsPerRow - 1 || 1));
+    const gap = wellsPerRow > 1 ? (innerW - wellsPerRow * wellW) / (wellsPerRow - 1) : 0;
+    const wellStartX = pad + (innerW - (wellsPerRow * wellW + (wellsPerRow - 1) * gap)) / 2;
+    const wellStartY = pad + 20;
+
+    const renderWells = (rowIdx) =>
+      Array.from({ length: wellsPerRow }).map((_, i) => (
+        <rect
+          key={`${rowIdx}-${i}`}
+          x={wellStartX + i * (wellW + gap)}
+          y={wellStartY + rowIdx * (wellH + 30)}
+          width={wellW} height={wellH}
+          rx="2"
+          fill="#7dd3fc" fillOpacity="0.25"
+          stroke="#7dd3fc" strokeWidth="1"
+        />
+      ));
+
+    return (
+      <div style={{ marginTop: 24 }}>
+        <svg width={W + 100} height={H + 100} viewBox={`-50 -30 ${W + 100} ${H + 100}`} style={{ display: "block", margin: "0 auto" }}>
+          {/* Tray body */}
+          <rect x={0} y={0} width={W} height={H} rx="6" fill="none" stroke="#7dd3fc" strokeWidth="2" strokeOpacity="0.4" />
+          {/* Tray walls (inner) */}
+          <rect x={wallT} y={wallT} width={W - wallT * 2} height={H - wallT * 2} rx="4" fill="none" stroke="#7dd3fc" strokeWidth="1" strokeOpacity="0.2" />
+
+          {/* Wells */}
+          {Array.from({ length: t.rows }).map((_, r) => renderWells(r))}
+
+          {/* Width dimension line */}
+          <line x1={0} y1={H + 20} x2={W} y2={H + 20} stroke="#3a7a94" strokeWidth="1" />
+          <line x1={0} y1={H + 14} x2={0} y2={H + 26} stroke="#3a7a94" strokeWidth="1" />
+          <line x1={W} y1={H + 14} x2={W} y2={H + 26} stroke="#3a7a94" strokeWidth="1" />
+          <text x={W / 2} y={H + 38} textAnchor="middle" fill="#7dd3fc" fontSize="11" fontFamily="EB Garamond, serif">{t.w} mm</text>
+
+          {/* Height dimension line */}
+          <line x1={W + 20} y1={0} x2={W + 20} y2={H} stroke="#3a7a94" strokeWidth="1" />
+          <line x1={W + 14} y1={0} x2={W + 26} y2={0} stroke="#3a7a94" strokeWidth="1" />
+          <line x1={W + 14} y1={H} x2={W + 26} y2={H} stroke="#3a7a94" strokeWidth="1" />
+          <text x={W + 36} y={H / 2} textAnchor="middle" fill="#7dd3fc" fontSize="11" fontFamily="EB Garamond, serif" transform={`rotate(90, ${W + 36}, ${H / 2})`}>{t.h} mm</text>
+
+          {/* Well count label */}
+          <text x={W / 2} y={-12} textAnchor="middle" fill="#c8e8f5" fontSize="12" fontFamily="EB Garamond, serif" fontWeight="700">{t.label}</text>
+          <text x={W / 2} y={H + 58} textAnchor="middle" fill="#3a7a94" fontSize="11" fontFamily="EB Garamond, serif">{t.volLabel} · {t.wells * t.rows} wells</text>
+
+          {/* Well width label */}
+          <line x1={wellStartX} y1={wellStartY + wellH + 8} x2={wellStartX + wellW} y2={wellStartY + wellH + 8} stroke="#3a7a94" strokeWidth="0.8" strokeDasharray="3,2" />
+          <text x={wellStartX + wellW / 2} y={wellStartY + wellH + 18} textAnchor="middle" fill="#3a7a94" fontSize="9" fontFamily="EB Garamond, serif">10 mm</text>
+        </svg>
+      </div>
+    );
+  };
+
+  const allTrays = [
+    { key: "mini6", label: "Mini — 6 well", dim: "7 × 7 cm", wells: 6, vol: "25–30 mL", use: "≤5 samples" },
+    { key: "mini10", label: "Mini — 10 well", dim: "7 × 7 cm", wells: 10, vol: "30–35 mL", use: "6–9 samples" },
+    { key: "medium12", label: "Medium — 12 well", dim: "10 × 10 cm", wells: 12, vol: "50–60 mL", use: "10–11 samples" },
+    { key: "medium20", label: "Medium — 20 well", dim: "10 × 10 cm", wells: 20, vol: "60–75 mL", use: "12–19 samples" },
+    { key: "large", label: "Large — 20 well × 2", dim: "15 × 15 cm", wells: 40, vol: "100–120 mL", use: "20+ samples" },
+  ];
 
   return (
     <div className="page">
       <h2>Template Selector</h2>
       <p className="page-subtitle">Find the right gel tray and comb for your experiment</p>
 
-      <div className="result-box info" style={{marginBottom: "24px"}}>
+      <div className="result-box info" style={{ marginBottom: 24 }}>
         <h3>From previous inputs</h3>
         <div className="result-row">
           <span className="result-label">Gel Volume</span>
@@ -315,55 +389,31 @@ function TemplatePage({ inputs, updateInput }) {
       <button className="btn" onClick={calculate}>Find Template</button>
 
       {result && (
-        <div className="result-box output">
-          <h3>Recommended Setup</h3>
-          <div className="result-row">
-            <span className="result-label">Gel Tray</span>
-            <span className="result-value">{result.tray}</span>
+        <>
+          <div className="result-box output" style={{ marginTop: 24 }}>
+            <h3>Recommended Setup</h3>
+            <div className="result-row"><span className="result-label">Gel Tray</span><span className="result-value">{result.tray}</span></div>
+            <div className="result-row"><span className="result-label">Comb</span><span className="result-value">{result.comb}</span></div>
+            <div className="result-row"><span className="result-label">Well Volume Capacity</span><span className="result-value">{result.wellVol}</span></div>
+            <div className="result-row"><span className="result-label">Gel Volume Needed</span><span className="result-value">{result.gelVol}</span></div>
+            <div className="result-row"><span className="result-label">Total Wells Needed</span><span className="result-value">{result.total} (samples + ladder)</span></div>
           </div>
-          <div className="result-row">
-            <span className="result-label">Comb</span>
-            <span className="result-value">{result.comb}</span>
-          </div>
-          <div className="result-row">
-            <span className="result-label">Well Volume Capacity</span>
-            <span className="result-value">{result.wellVol}</span>
-          </div>
-          <div className="result-row">
-            <span className="result-label">Total Wells Needed</span>
-            <span className="result-value">{result.total} (samples + ladder)</span>
-          </div>
-        </div>
+          <TrayDiagram trayKey={result.trayKey} />
+          <div className="warning-box" style={{ marginTop: 16 }}>💡 {result.note}</div>
+        </>
       )}
 
-      {result && (
-        <div className="warning-box" style={{marginTop: "16px"}}>
-          💡 {result.note}. Add photos of your trays here — upload them to the <strong>public</strong> folder and we'll display them in the next step.
-        </div>
-      )}
-
-      <div className="result-box info" style={{marginTop: "24px"}}>
-        <h3>Quick Reference</h3>
-        <div className="result-row">
-          <span className="result-label">1–6 samples</span>
-          <span className="result-value">Mini tray, 6-well</span>
-        </div>
-        <div className="result-row">
-          <span className="result-label">7–10 samples</span>
-          <span className="result-value">Mini tray, 10-well</span>
-        </div>
-        <div className="result-row">
-          <span className="result-label">11–12 samples</span>
-          <span className="result-value">Medium tray, 12-well</span>
-        </div>
-        <div className="result-row">
-          <span className="result-label">13–20 samples</span>
-          <span className="result-value">Medium tray, 20-well</span>
-        </div>
-        <div className="result-row">
-          <span className="result-label">21+ samples</span>
-          <span className="result-value">Large tray, 20-well × 2</span>
-        </div>
+      <h3 style={{ fontSize: "1.4rem", marginTop: 48, marginBottom: 20 }}>All Standard Tray Sizes</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {allTrays.map(t => (
+          <div key={t.key} className="protocol-card">
+            <div style={{ flex: 1 }}>
+              <div className="protocol-title">{t.label}</div>
+              <div className="protocol-body">{t.dim} · {t.vol} gel · Use for: {t.use}</div>
+            </div>
+            <TrayDiagram trayKey={t.key} />
+          </div>
+        ))}
       </div>
     </div>
   );
